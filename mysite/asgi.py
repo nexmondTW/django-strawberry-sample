@@ -9,8 +9,35 @@ https://docs.djangoproject.com/en/4.1/howto/deployment/asgi/
 
 import os
 
+from channels.routing import ProtocolTypeRouter, URLRouter, ChannelNameRouter
+
 from django.core.asgi import get_asgi_application
+from django.urls import re_path
+
+from strawberry.channels import GraphQLHTTPConsumer, GraphQLWSConsumer
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'mysite.settings')
+django_application = get_asgi_application()
 
-application = get_asgi_application()
+from api.schema import schema
+
+websocket_urlpatterns = [
+    re_path('graphql/', GraphQLWSConsumer.as_asgi(schema=schema)),
+]
+
+# gql_http_consumer = GraphQLHTTPConsumer.as_asgi(schema=schema)
+# gql_ws_consumer = GraphQLWSConsumer.as_asgi(schema=schema)
+
+application = ProtocolTypeRouter(
+    {
+        'http': URLRouter(
+            [
+                # re_path('^graphql', gql_http_consumer),
+                re_path(
+                    '^', django_application
+                ),
+            ]
+        ),
+        'websocket': URLRouter(websocket_urlpatterns),
+    }
+)
