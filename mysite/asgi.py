@@ -22,22 +22,25 @@ django_application = get_asgi_application()
 from api.schema import schema
 
 websocket_urlpatterns = [
-    re_path('graphql/', GraphQLWSConsumer.as_asgi(schema=schema)),
+    re_path(r'graphql', GraphQLWSConsumer.as_asgi(schema=schema)),
 ]
+
+print(websocket_urlpatterns)
 
 # gql_http_consumer = GraphQLHTTPConsumer.as_asgi(schema=schema)
 # gql_ws_consumer = GraphQLWSConsumer.as_asgi(schema=schema)
 
 application = ProtocolTypeRouter(
     {
-        'http': URLRouter(
-            [
-                # re_path('^graphql', gql_http_consumer),
-                re_path(
-                    '^', django_application
-                ),
-            ]
-        ),
+        'http': django_application,
+        # 'http': URLRouter(
+        #     [
+        #         # re_path('^graphql', gql_http_consumer),
+        #         re_path(
+        #             '^', django_application
+        #         ),
+        #     ]
+        # ),
         'websocket': URLRouter(websocket_urlpatterns),
     }
 )
