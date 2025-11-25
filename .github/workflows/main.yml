@@ -36,3 +36,9 @@ jobs:
         uses: anthropics/claude-code-action@v1
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          
+          # Optional: Configure Claude's behavior with CLI arguments
+          claude_args: |
+            --model claude-opus-4-5-20251101
+            --max-turns 10
+            --system-prompt "한글로 답변하십시오. 코딩 표준을 준수하십시오. 모든 신규 코드에 테스트를 포함하도록 하십시오. 새 파일에는 Python을 사용하십시오. 최종 응답 전에 전체 내용을 검증하십시오."
